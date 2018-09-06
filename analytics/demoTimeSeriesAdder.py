@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 import requests
 import ast
+import pickle
 from sklearn.feature_extraction import text
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
+from sklearn.externals import joblib
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -57,16 +59,15 @@ class demoTimeSeriesAdder:
         features_test = features_test.drop('Resolution_Code', 1)
 
         ## Build random forest classifier
-        rfc = RandomForestClassifier()
-        rfc.fit(features_train_dropped,labels_train)
-        features_train_dropped = features_train.drop('Resolution_Code', 1)
         classifier = RandomForestClassifier()
         classifier.fit(features_train_dropped, labels_train)
 
         ## Accuracy
         rfc_predictions = classifier.predict(features_test)
         print accuracy_score(labels_test, rfc_predictions)
-
+        # save classifier as pickle
+        joblib.dump(classifier, 'model.pkl')
+        # upload to blobstore
 
 
     def load_data_from_files(self):
@@ -118,10 +119,16 @@ class demoTimeSeriesAdder:
 
     def combine_df(self, sr_df, el_df):
         final_df = pd.merge(sr_df, el_df, 'left', on = 'sr_id').fillna(-999).drop('symptom_x', 1).drop('symptom_y', 1).drop('sr_id', 1).drop('Created_Date', 1)
-        print(final_df)
         return final_df
+
+    def run_model(self, data):
+        classifier = joblib.load('model.pkl')
+        # create a df with all the features
+        #classifier.predict()
+
 
 
 if __name__ == "__main__":
     demo = demoTimeSeriesAdder()
     demo.train_model()
+    #demo.run_model()
