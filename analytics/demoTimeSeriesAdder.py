@@ -45,8 +45,8 @@ class demoTimeSeriesAdder:
         # get data into dataframe
         svc_request_df, error_log_df = self.load_data_from_files()
         clean_sr_df = self.clean_svc_requests(svc_request_df)
-        #clean_el_df = self.clean_error_logs(error_log_df)
-        #combined_df = self.combine_df(clean_sr_df, clean_el_df)
+        clean_el_df = self.clean_error_logs(error_log_df)
+        combined_df = self.combine_df(clean_sr_df, clean_el_df)
 
     def load_data_from_files(self):
         svc_request_df = pd.read_csv("service_requests_Train-test_set.csv")
@@ -75,7 +75,7 @@ class demoTimeSeriesAdder:
         vect = CountVectorizer()
         X = vect.fit_transform(svc_request_df['symptom'])
         count_vect_df = pd.DataFrame(X.todense(), columns=vect.get_feature_names())
-        print count_vect_df
+        return count_vect_df
 
     def clean_error_logs(self, error_log_df):
         # remove non-numeric error codes
@@ -88,8 +88,10 @@ class demoTimeSeriesAdder:
         e4 = e3.join(pd.DataFrame(mlb.fit_transform(e3.pop('error_codes')),
                           columns=mlb.classes_,
                           index=e3.index))
-        print e4
         return e4
+
+    def combine_df(self, sr_df, el_df):
+        pass
 
 
 if __name__ == "__main__":
