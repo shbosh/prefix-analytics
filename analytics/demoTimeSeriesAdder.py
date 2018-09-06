@@ -9,6 +9,9 @@ from sklearn import metrics
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
 
 class demoTimeSeriesAdder:
     def __init__(self):
@@ -48,6 +51,24 @@ class demoTimeSeriesAdder:
         clean_el_df = self.clean_error_logs(error_log_df)
         combined_df = self.combine_df(clean_sr_df, clean_el_df)
 
+        features_train, features_test, labels_train, labels_test = train_test_split(combined_df,combined_df.Resolution_Code,test_size=0.2,random_state=1)
+        ## Drop y from features
+        features_train_dropped = features_train.drop('Resolution_Code', 1)
+        features_test = features_test.drop('Resolution_Code', 1)
+
+        ## Build random forest classifier
+        rfc = RandomForestClassifier()
+        rfc.fit(features_train_dropped,labels_train)
+        features_train_dropped = features_train.drop('Resolution_Code', 1)
+        classifier = RandomForestClassifier()
+        classifier.fit(features_train_dropped, labels_train)
+
+        ## Accuracy
+        rfc_predictions = classifier.predict(features_test)
+        print accuracy_score(labels_test, rfc_predictions)
+
+
+
     def load_data_from_files(self):
         svc_request_df = pd.read_csv("service_requests_Train-test_set.csv")
         error_log_df = pd.read_csv("test_error_code.csv")
@@ -75,7 +96,12 @@ class demoTimeSeriesAdder:
         vect = CountVectorizer()
         X = vect.fit_transform(svc_request_df['symptom'])
         count_vect_df = pd.DataFrame(X.todense(), columns=vect.get_feature_names())
-        return count_vect_df
+        ## merge back with other columns
+        Xtrain = svc_request_df.symptom.reset_index()
+        final = pd.concat([Xtrain, count_vect_df], axis=1).set_index('index')
+        ## merge with resolution_codes
+        final_cleaned = pd.merge(final, svc_request_df, 'left', left_index=True, right_index=True)
+        return final_cleaned
 
     def clean_error_logs(self, error_log_df):
         # remove non-numeric error codes
@@ -91,7 +117,9 @@ class demoTimeSeriesAdder:
         return e4
 
     def combine_df(self, sr_df, el_df):
-        pass
+        final_df = pd.merge(sr_df, el_df, 'left', on = 'sr_id').fillna(-999).drop('symptom_x', 1).drop('symptom_y', 1).drop('sr_id', 1).drop('Created_Date', 1)
+        print(final_df)
+        return final_df
 
 
 if __name__ == "__main__":
