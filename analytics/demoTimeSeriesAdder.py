@@ -57,24 +57,25 @@ class demoTimeSeriesAdder:
         pass
 
     def clean_svc_requests(self, svc_request_df):
-        # stop = text.ENGLISH_STOP_WORDS
-        # stopwords = r'\b(?:{})\b'.format('|'.join(stop))
-        #
-        # remove_words = ['imagenonenonenone', '^image', 'cst', 'cd', 'image:none-none-none']
-        # remove_words = r'\b(?:{})\b'.format('|'.join(remove_words))
-        #
-        # svc_request_df['symptom'] = svc_request_df['symptom'] \
-        #     .apply(lambda x: x.replace('[^\w\s]','') \
-        #             .lower() \
-        #             .replace(stopwords, '') \
-        #             .replace('\d+', '') \
-        #             .replace(remove_words, '') \
-        #     )
+        stop = text.ENGLISH_STOP_WORDS
+        stopwords = r'\b(?:{})\b'.format('|'.join(stop))
+
+        remove_words = ['imagenonenonenone', '^image', 'cst', 'cd', 'image:none-none-none']
+        remove_words = r'\b(?:{})\b'.format('|'.join(remove_words))
+
+        svc_request_df['symptom'] = svc_request_df['symptom'] \
+            .apply(lambda x: x.replace('[^\w\s]','') \
+                    .lower() \
+                    .replace(stopwords, '') \
+                    .replace('\d+', '') \
+                    .replace(remove_words, '') \
+            )
         # pivot words
-        print svc_request_df.symptom
+        # print svc_request_df.symptom
         vect = CountVectorizer()
-        s1 = vect.fit_transform(svc_request_df['symptom'])
-        #print s1
+        X = vect.fit_transform(svc_request_df['symptom'])
+        count_vect_df = pd.DataFrame(X.todense(), columns=vect.get_feature_names())
+        print count_vect_df
 
     def clean_error_logs(self, error_log_df):
         # remove non-numeric error codes
