@@ -6,7 +6,9 @@ from sklearn.feature_extraction import text
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
-
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 class demoTimeSeriesAdder:
     def __init__(self):
@@ -42,25 +44,51 @@ class demoTimeSeriesAdder:
     def train_model(self):
         # get data into dataframe
         svc_request_df, error_log_df = self.load_data_from_files()
-        clean_sr_df = self.clean_svc_request(svc_request_df)
-        clean_el_df = self.clean_error_log(error_log_df)
-
+        clean_sr_df = self.clean_svc_requests(svc_request_df)
+        #clean_el_df = self.clean_error_logs(error_log_df)
+        #combined_df = self.combine_df(clean_sr_df, clean_el_df)
 
     def load_data_from_files(self):
         svc_request_df = pd.read_csv("service_requests_Train-test_set.csv")
         error_log_df = pd.read_csv("test_error_code.csv")
         return svc_request_df, error_log_df
 
-
     def load_data_from_db(self):
         pass
 
-    def clean_sr_df(self):
-        pass
+    def clean_svc_requests(self, svc_request_df):
+        # stop = text.ENGLISH_STOP_WORDS
+        # stopwords = r'\b(?:{})\b'.format('|'.join(stop))
+        #
+        # remove_words = ['imagenonenonenone', '^image', 'cst', 'cd', 'image:none-none-none']
+        # remove_words = r'\b(?:{})\b'.format('|'.join(remove_words))
+        #
+        # svc_request_df['symptom'] = svc_request_df['symptom'] \
+        #     .apply(lambda x: x.replace('[^\w\s]','') \
+        #             .lower() \
+        #             .replace(stopwords, '') \
+        #             .replace('\d+', '') \
+        #             .replace(remove_words, '') \
+        #     )
+        # pivot words
+        print svc_request_df.symptom
+        vect = CountVectorizer()
+        s1 = vect.fit_transform(svc_request_df['symptom'])
+        #print s1
 
-    def clean_error_log(self):
-        pass
-
+    def clean_error_logs(self, error_log_df):
+        # remove non-numeric error codes
+        error_log_df['Numeric'] = error_log_df['error_codes'].apply(lambda s: str(s).isdigit())
+        e1 = error_log_df[error_log_df['Numeric'] == True]
+        # pivot error codes
+        e2 = e1.groupby('sr_id')['error_codes'].apply(set).apply(list)
+        e3 = pd.DataFrame({'sr_id':e2.index, 'error_codes':e2.values})
+        mlb = MultiLabelBinarizer()
+        e4 = e3.join(pd.DataFrame(mlb.fit_transform(e3.pop('error_codes')),
+                          columns=mlb.classes_,
+                          index=e3.index))
+        print e4
+        return e4
 
 
 if __name__ == "__main__":
