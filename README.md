@@ -1,6 +1,9 @@
 #demo-timeseries-adder-with-model-py
 
 A python-based sample analytic that adds two timeseries arrays using a trained model for the Predix Analytics platform.
+## Architecture
+
+[Imgur](https://i.imgur.com/01DxkKH.png)
 
 ## Compiled binaries
 Refer to the [Releases](https://github.com/PredixDev/predix-analytics-sample/releases) page for compiled binaries you can upload directly to Predix Analytics.
