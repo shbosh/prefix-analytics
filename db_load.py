@@ -15,10 +15,9 @@ class DBLoader:
         # svc_req_list = list(self.read_svc_req_csv('analytics/service_requests_Train-test_set.csv'))
         # for svc_req in svc_req_list:
         #     self.load_svc_req_item(svc_req)
-        error_log_list = joblib.load('SR_with_syslog_error_code.joblib')
+        error_log_list = list(self.read_err_log_csv('error_codes_sample.csv'))
         for error_log in error_log_list:
             self.load_error_log_item(error_log)
-            break
         self.conn.close()
 
     def load_svc_req_item(self, sr):
@@ -31,10 +30,10 @@ class DBLoader:
 
     def load_error_log_item(self, el):
         try:
-            self.cur.execute("""INSERT INTO error_Log(error_code, error_timestamp, sr_id) VALUES (%s, %s, %s);""", (el['error_codes'], el['log_timestamp'], el['sr_id']))
+            self.cur.execute("""INSERT INTO error_log(error_code, error_timestamp, sr_id) VALUES (%s, %s, %s);""", (el['error_codes'], el['log_timestamp'], el['sr_id']))
             self.conn.commit()
         except psycopg2.IntegrityError:
-            print 'sr_id: {} already in db'.format(sr['sr_id'])
+            print 'sr_id: {} not found'.format(el['sr_id'])
             self.conn.rollback()
 
     def read_svc_req_csv(self, fname):
@@ -50,6 +49,20 @@ class DBLoader:
                     'timestamp': row[1],
                     'final_rescode': row[2],
                     'symptom': row[3],
+                }
+
+    def read_err_log_csv(self, fname):
+        with open(fname) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            is_first = True
+            for row in csv_reader:
+                if is_first:
+                    is_first = False
+                    continue
+                yield {
+                    'sr_id': row[1],
+                    'log_timestamp': row[3],
+                    'error_codes': row[2],
                 }
 
 
