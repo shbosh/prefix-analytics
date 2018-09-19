@@ -1,2 +1,2 @@
-analytics/combined.csv
-SR_with_syslog_error_code.joblib
+.DS_Store
+analytics/full_model.pkl

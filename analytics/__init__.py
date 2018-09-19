@@ -1,1 +1,1 @@
-from analytics.demoTimeSeriesAdder import demoTimeSeriesAdder
+from analytics.Prefix import Prefix

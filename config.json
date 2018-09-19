@@ -1,5 +1,5 @@
 {
-  "entry-method": "analytics.demoTimeSeriesAdder.executeModel",
+  "entry-method": "analytics.Prefix.run_model",
   "non-conda-libs": [
   ],
   "conda-libs": [
