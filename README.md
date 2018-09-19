@@ -8,7 +8,7 @@ A Python-based model for predicting resolution codes of service incidents for th
 
 ## Building, deploying and running the analytic
 1. Zip the contents of this directory
-2. Create an analytic in Analytics Catalog with the name "prefix-model" and the version "v1".
+2. Create an analytic in Analytics Catalog with a name and version.
 3. Upload the zip file and attach it to the created analytic.
 4. Deploy and test the analytic on Predix Analytics platform.
 
