@@ -6,6 +6,11 @@ A Python-based model for predicting resolution codes of service incidents for th
 
 ![Imgur](https://i.imgur.com/Xwhw10K.png)
 
+## Folder Structure
+1. Resolution code prediction model is created on `model.ipynb`
+2. Resolution code analysis is done on `resolution analytics.ipynb`
+3. `/analytics` folder consist of model deployed to Predix Analytics Framework
+
 ## Building, deploying and running the analytic
 1. Zip the contents of this directory
 2. Create an analytic in Analytics Catalog with a name and version.
