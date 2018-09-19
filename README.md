@@ -29,6 +29,19 @@ The expected JSON input data format is as follows:
 The JSON output format from the analytic is as follows:
 ```json
 {
-  "predicted": "Perform_software_reconfig"
+  "predictions": [
+  {
+  	"label": "No structural problem found",
+	"proba": 0.12126818536281116,
+  },
+  {
+  	"label": "Clean_or_adjust_mylar_scan_window",
+	"proba": 0.08320182650371911,
+  },
+  {
+  	"label": "Configure_ConnectPro",
+	"proba": 0.049685156406835136,
+  }
+  ]
 }
 ```
