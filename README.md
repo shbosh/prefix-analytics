@@ -4,7 +4,7 @@ A Python-based model for predicting resolution codes of service incidents for th
 
 ## Architecture
 
-![Imgur](https://i.imgur.com/01DxkKH.png)
+![Imgur](https://i.imgur.com/Xwhw10K.png)
 
 ## Building, deploying and running the analytic
 1. Zip the contents of this directory
